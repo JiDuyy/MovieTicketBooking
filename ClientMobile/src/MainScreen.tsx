@@ -1,15 +1,12 @@
 import React from "react";
 import { NavigationContainer } from "@react-navigation/native";
-import { BottomTabNavigator } from "./components/BottomNavigationBar";
+import { BottomTabNavigator } from "./components/BottomNavigationBar/BottomNavigationBar";
 import { View, StyleSheet, SafeAreaView } from "react-native";
 
-
-export const Main: React.FC = () => {
+export const MainScreen: React.FC = () => {
   return (
     <View style={styles.container}>
-      <NavigationContainer>
-        <BottomTabNavigator />
-      </NavigationContainer>
+      <BottomTabNavigator />
     </View>
   );
 };

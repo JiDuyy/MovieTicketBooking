@@ -10,21 +10,28 @@ import {
 import { HomeStyles } from "./HomeStyle";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import DeckSwiper from "react-native-deck-swiper";
+import { TypeMovie } from "../../components/TypeMovie/TypeMovie";
+import { fontSize } from "../../Utils/size";
 
-export const HomeScreen: React.FC = () => {
-  interface Movie {
-    id: number;
-    title: string;
-    image: string;
-    subTitle: string;
-    start: number;
-  }
+interface Movie {
+  id: number;
+  title: string;
+  image: string;
+  subTitle: string;
+  start: number;
+}
 
-  interface typeMovie {
-    id: number;
-    title: string;
-  }
+interface filmCategorization {
+  id: number;
+  title: string;
+}
 
+interface typeMovie {
+  id: number;
+  title: string;
+}
+
+export const HomeScreen: React.FC = ({ navigation }: any) => {
   const myListMovie: Movie[] = [
     {
       id: 1,
@@ -55,7 +62,7 @@ export const HomeScreen: React.FC = () => {
     },
   ];
 
-  const myTypeMovie: typeMovie[] = [
+  const myFilmCategorization: filmCategorization[] = [
     {
       id: 1,
       title: "Popular",
@@ -78,36 +85,45 @@ export const HomeScreen: React.FC = () => {
     },
   ];
 
+  const myTypeMovie: typeMovie[] = [
+    {
+      id: 1,
+      title: "Anime",
+    },
+    {
+      id: 2,
+      title: "Action",
+    },
+    {
+      id: 3,
+      title: "Horror",
+    },
+  ];
+
   const [currentIndex, setCurrentIndex] = React.useState<number>(0);
   const [activeCard, setActiveCard] = React.useState<boolean>(true);
 
-  const renderCard = (movie: Movie): React.ReactElement => {
-    const renderStarIcons = (count: number) => {
-      const starIcons = [];
+  const renderStarIcons = (count: number) => {
+    const starIcons = [];
 
-      for (let i = 1; i <= 5; i++) {
-        if (i <= count) {
-          starIcons.push(
-            <Ionicons key={i} name="star" color="yellow" size={20} />
-          );
-        } else if (i - count === 0.5) {
-          starIcons.push(
-            <Ionicons
-              key={i}
-              name="star-half-outline"
-              color="yellow"
-              size={20}
-            />
-          );
-        } else {
-          starIcons.push(
-            <Ionicons key={i} name="star-outline" color="yellow" size={20} />
-          );
-        }
+    for (let i: number = 1; i <= 5; i++) {
+      if (i <= count) {
+        starIcons.push(
+          <Ionicons key={i} name="star" color="yellow" size={20} />
+        );
+      } else if (i - count === 0.5) {
+        starIcons.push(
+          <Ionicons key={i} name="star-half-outline" color="yellow" size={20} />
+        );
+      } else {
+        starIcons.push(
+          <Ionicons key={i} name="star-outline" color="yellow" size={20} />
+        );
       }
-
-      return starIcons;
-    };
+    }
+    return starIcons;
+  };
+  const renderCard = (movie: Movie): React.ReactElement => {
     return (
       <View style={HomeStyles.cardMovie}>
         <Image
@@ -116,15 +132,9 @@ export const HomeScreen: React.FC = () => {
           resizeMode="cover"
         />
         <View style={HomeStyles.footerMovie}>
-          <View
-            style={{
-              flexDirection: "row",
-              justifyContent: "space-between",
-              alignItems: "center",
-            }}
-          >
+          <View style={HomeStyles.footerMovieHeader}>
             <Text style={HomeStyles.titleMovie}>{movie.title}</Text>
-            <View style={{ flexDirection: "row" }}>
+            <View style={HomeStyles.containerStart}>
               {renderStarIcons(movie.start)}
             </View>
           </View>
@@ -137,6 +147,7 @@ export const HomeScreen: React.FC = () => {
             </TouchableOpacity>
             <TouchableOpacity
               style={[HomeStyles.button, HomeStyles.buttonBooking]}
+              onPress={() => navigation.navigate("BookingScreen")}
             >
               <Image
                 source={{
@@ -171,7 +182,7 @@ export const HomeScreen: React.FC = () => {
         source={{
           uri: "https://i.pinimg.com/originals/0e/5b/a7/0e5ba7f45af8be7522c4f42123a29fdd.jpg",
         }}
-        style={{ position: "absolute", width: "120%", height: "100%" }}
+        style={HomeStyles.backgroundImage}
         resizeMode="cover"
       />
       <View style={HomeStyles.header}>
@@ -190,192 +201,74 @@ export const HomeScreen: React.FC = () => {
         <Text style={HomeStyles.titleBody}>Movie Layout</Text>
         <View style={HomeStyles.containerIcon}>
           <TouchableOpacity onPress={() => handelCard(true)}>
-            <Ionicons name="copy-outline" color="white" size={30} />
+            <Ionicons
+              name="copy-outline"
+              color="white"
+              size={fontSize.ICON_BUTTON}
+            />
           </TouchableOpacity>
           <TouchableOpacity onPress={() => handelCard(false)}>
-            <Ionicons name="grid-outline" color="white" size={30} />
+            <Ionicons
+              name="grid-outline"
+              color="white"
+              size={fontSize.ICON_BUTTON}
+            />
           </TouchableOpacity>
         </View>
       </View>
       <View style={HomeStyles.body}>
         {activeCard && activeCard ? (
-          <View>
-            <DeckSwiper<Movie>
-              cards={myListMovie}
-              renderCard={renderCard}
-              onSwipedLeft={onSwipeLeft}
-              onSwipedRight={onSwipeRight}
-              stackSize={3}
-              stackScale={8}
-              stackSeparation={-60} // Thay đổi giá trị stackSeparation
-              cardIndex={currentIndex}
-              backgroundColor="transparent"
-              infinite
-              animateCardOpacity
-              swipeBackCard
-            />
-          </View>
+          <DeckSwiper<Movie>
+            cards={myListMovie}
+            renderCard={renderCard}
+            onSwipedLeft={onSwipeLeft}
+            onSwipedRight={onSwipeRight}
+            stackSize={3}
+            stackScale={8}
+            stackSeparation={-60} 
+            cardIndex={currentIndex}
+            backgroundColor="transparent"
+            infinite
+            animateCardOpacity
+            swipeBackCard
+          />
         ) : (
           <View>
-            {/* <View style={HomeStyles.search}>
-              <Ionicons name="search-outline" color="white" size={30} />
-              <TextInput
-                style={HomeStyles.textInputSearch}
-                placeholder="Enter movie name..."
-                placeholderTextColor="gray"
-              />
-              <Ionicons name="mic-outline" color="white" size={30} />
-            </View> */}
             <ScrollView
-              horizontal
               showsHorizontalScrollIndicator={false}
               showsVerticalScrollIndicator={false}
             >
-              <View
-                style={{
-                  flexDirection: "row",
-                  gap: 20,
-                  marginVertical: 20,
-                  height: 30,
-                  alignItems: "center",
-                }}
+              <ScrollView
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                showsVerticalScrollIndicator={false}
               >
+                <View style={HomeStyles.containerMovieCategori}>
+                  {myFilmCategorization &&
+                    myFilmCategorization.map((filmCategorization) => {
+                      return (
+                        <Text
+                          key={filmCategorization.id}
+                          style={HomeStyles.titleMovieCategori}
+                        >
+                          {filmCategorization.title}
+                        </Text>
+                      );
+                    })}
+                </View>
+              </ScrollView>
+              <View style={HomeStyles.emptyScrollView}>
                 {myTypeMovie &&
                   myTypeMovie.map((typeMovie) => {
                     return (
-                      <Text
-                        key={typeMovie.id}
-                        style={{ color: "white", fontSize: 18 }}
-                      >
-                        {typeMovie.title}
-                      </Text>
+                      <View key={typeMovie.id}>
+                        <Text style={HomeStyles.titleMovieList}>
+                          {typeMovie.title}
+                        </Text>
+                        <TypeMovie typeMovies={myListMovie} />
+                      </View>
                     );
                   })}
-              </View>
-            </ScrollView>
-            <ScrollView
-              showsHorizontalScrollIndicator={false}
-              showsVerticalScrollIndicator={false}
-            >
-              <View>
-                <Text
-                  style={{
-                    color: "white",
-                    fontSize: 24,
-                    marginVertical: 20,
-                    fontWeight: "bold",
-                  }}
-                >
-                  Anime
-                </Text>
-                <ScrollView
-                  horizontal
-                  showsHorizontalScrollIndicator={false}
-                  showsVerticalScrollIndicator={false}
-                >
-                  <View style={{ flexDirection: "row", gap: 10 }}>
-                    {myListMovie &&
-                      myListMovie.map((movie) => {
-                        return (
-                          <View
-                            key={movie.id}
-                            style={{ width: 150, height: 200 }}
-                          >
-                            <Image
-                              source={{ uri: movie.image }}
-                              resizeMode="cover"
-                              style={{
-                                position: "absolute",
-                                width: "100%",
-                                height: "100%",
-                                borderRadius: 10,
-                              }}
-                            />
-                          </View>
-                        );
-                      })}
-                  </View>
-                </ScrollView>
-              </View>
-              <View>
-                <Text
-                  style={{
-                    color: "white",
-                    fontSize: 24,
-                    marginVertical: 20,
-                    fontWeight: "bold",
-                  }}
-                >
-                  Horror
-                </Text>
-                <ScrollView
-                  horizontal
-                  showsHorizontalScrollIndicator={false}
-                  showsVerticalScrollIndicator={false}
-                >
-                  <View style={{ flexDirection: "row", gap: 10 }}>
-                    {myListMovie &&
-                      myListMovie.map((movie) => {
-                        return (
-                          <View
-                            key={movie.id}
-                            style={{ width: 150, height: 200 }}
-                          >
-                            <Image
-                              source={{ uri: movie.image }}
-                              resizeMode="cover"
-                              style={{
-                                position: "absolute",
-                                width: "100%",
-                                height: "100%",
-                                borderRadius: 10,
-                              }}
-                            />
-                          </View>
-                        );
-                      })}
-                  </View>
-                </ScrollView>
-              </View>
-              <View style={{ marginBottom: 400 }}>
-                <Text
-                  style={{
-                    color: "white",
-                    fontSize: 24,
-                    marginVertical: 20,
-                    fontWeight: "bold",
-                  }}
-                >
-                  Action
-                </Text>
-                <ScrollView
-                  horizontal
-                  showsHorizontalScrollIndicator={false}
-                  showsVerticalScrollIndicator={false}
-                >
-                  <View style={{ flexDirection: "row", gap: 10 }}>
-                    {myListMovie &&
-                      myListMovie.map((movie) => {
-                        return (
-                          <View
-                            key={movie.id}
-                            style={{ width: 150, height: 200 }}
-                          >
-                            <Image
-                              source={{ uri: movie.image }}
-                              resizeMode="cover"
-                              style={{
-                                position: "absolute",
-                                width: "100%",
-                                height: "100%",
-                                borderRadius: 10,
-                              }}
-                            />
-                          </View>
-                        );
-                      })}
-                  </View>
-                </ScrollView>
               </View>
             </ScrollView>
           </View>
